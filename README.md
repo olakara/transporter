@@ -7,6 +7,8 @@ Transporter is a web application built with ASP.NET Core and Blazor. It provides
 - ASP.NET Core backend
 - Docker support for containerized deployment
 - Environment-based configuration (Development/Production)
+- **OpenTelemetry observability with distributed tracing and metrics**
+- **Health check endpoint for monitoring**
 
 ## Project Structure
 ```
@@ -98,6 +100,50 @@ The workflow will automatically build and push Docker images to `docker.io/[your
 ## Configuration
 - `appsettings.json` and `appsettings.Development.json` are used for configuration.
 - Update these files to change connection strings, logging, or other settings.
+
+## OpenTelemetry Observability
+
+The application includes comprehensive OpenTelemetry support for monitoring and observability:
+
+### Features
+- **Distributed Tracing**: Tracks requests across services with detailed spans
+- **Metrics Collection**: Runtime, HTTP, and application-level metrics
+- **Health Checks**: Available at `/health` endpoint
+- **Flexible Export**: Console output for development, OTLP for production
+
+### Configuration
+Configure OpenTelemetry in `appsettings.json`:
+```json
+{
+  "OpenTelemetry": {
+    "ServiceName": "Transporter.Web",
+    "ServiceVersion": "1.0.0",
+    "Tracing": {
+      "ConsoleExporter": { "Enabled": true },
+      "OtlpExporter": { 
+        "Enabled": false,
+        "Endpoint": "http://localhost:4317"
+      }
+    },
+    "Metrics": {
+      "ConsoleExporter": { "Enabled": true },
+      "OtlpExporter": { 
+        "Enabled": false,
+        "Endpoint": "http://localhost:4317"
+      }
+    }
+  }
+}
+```
+
+### Available Metrics
+- **ASP.NET Core**: Request duration, active requests, response codes
+- **Kestrel**: Connection metrics and duration
+- **.NET Runtime**: GC, memory, JIT compilation, thread pool
+- **HTTP Client**: Outbound request metrics
+
+### Endpoints
+- **Health Check**: `GET /health` - Returns application health status
 
 ## Folder Overview
 - `Pages/` - Razor pages for the app
